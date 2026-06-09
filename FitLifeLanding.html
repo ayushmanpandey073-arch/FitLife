@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FitLife — Your Health Companion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #00c896;
+    --blue: #0096ff;
+    --dark: #080d18;
+    --dark2: #0d1625;
+    --dark3: #111e30;
+    --text: #e2edf5;
+    --muted: #5a7a92;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.07);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(8,13,24,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700; color: var(--green);
+    text-decoration: none;
+  }
+
+  .nav-logo-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--muted); font-size: 14px; font-weight: 500;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    padding: 9px 22px; border-radius: 8px;
+    background: var(--green); color: #000;
+    font-size: 14px; font-weight: 700;
+    text-decoration: none; transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,200,150,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-glow-2 {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,150,255,0.06) 0%, transparent 70%);
+    top: 30%; left: 70%;
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px; border-radius: 20px;
+    background: rgba(0,200,150,0.08);
+    border: 1px solid rgba(0,200,150,0.25);
+    font-size: 12px; font-weight: 600; color: var(--green);
+    margin-bottom: 28px; letter-spacing: 0.5px;
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(48px, 8vw, 86px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    max-width: 900px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: var(--muted); max-width: 560px;
+    margin-bottom: 44px; font-weight: 400;
+    line-height: 1.7;
+  }
+
+  .hero-btns {
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 64px;
+  }
+
+  .btn-primary {
+    padding: 15px 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--green), #00a87a);
+    color: #000; font-size: 16px; font-weight: 700;
+    text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(0,200,150,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,200,150,0.35); }
+
+  .btn-secondary {
+    padding: 15px 34px; border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text); font-size: 16px; font-weight: 600;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.09); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+    padding: 28px 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    position: relative; z-index: 1;
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700; color: var(--green);
+    line-height: 1;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── PHONE MOCKUP ── */
+  .phone-wrap {
+    position: relative; z-index: 1;
+    margin-bottom: 0;
+  }
+
+  .phone-frame {
+    width: 260px; height: 520px;
+    border-radius: 36px;
+    background: var(--dark2);
+    border: 2px solid rgba(255,255,255,0.12);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .phone-screen {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #0a0f1e 0%, #0d1f2d 100%);
+    padding: 16px 12px;
+    display: flex; flex-direction: column; gap: 10px;
+    overflow: hidden;
+  }
+
+  .mock-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0 4px;
+  }
+
+  .mock-logo { font-size: 14px; font-weight: 800; color: var(--green); }
+  .mock-score { font-size: 14px; font-weight: 900; color: #ffd700; }
+
+  .mock-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 12px;
+  }
+
+  .mock-label { font-size: 9px; color: var(--muted); margin-bottom: 2px; }
+  .mock-big { font-size: 22px; font-weight: 900; color: var(--green); line-height: 1; }
+  .mock-small { font-size: 9px; color: var(--muted); }
+
+  .mock-bar-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 5px; margin-top: 6px; overflow: hidden; }
+  .mock-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 4px; }
+
+  .mock-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .mock-mini {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 10px;
+  }
+
+  .mock-mini-label { font-size: 8px; color: var(--muted); margin-bottom: 2px; }
+  .mock-mini-val { font-size: 16px; font-weight: 900; }
+
+  /* ── FEATURES ── */
+  section { padding: 100px 24px; position: relative; z-index: 1; }
+
+  .section-label {
+    font-size: 12px; font-weight: 700; color: var(--green);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700; letter-spacing: -1.5px;
+    line-height: 1.1; margin-bottom: 16px;
+  }
+
+  .section-sub { color: var(--muted); font-size: 16px; max-width: 480px; line-height: 1.7; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; max-width: 1100px; margin: 60px auto 0;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover { border-color: rgba(0,200,150,0.3); transform: translateY(-4px); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(0,200,150,0.1);
+    border: 1px solid rgba(0,200,150,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 18px;
+  }
+
+  .feature-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* ── HOW IT WORKS ── */
+  .steps-container {
+    max-width: 800px; margin: 60px auto 0;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .step-item {
+    display: flex; gap: 24px; align-items: flex-start;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .step-item:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(0,200,150,0.1);
+    border: 1px solid rgba(0,200,150,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 700; color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .step-content h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .step-content p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* ── REPORT CARD PREVIEW ── */
+  .report-showcase {
+    max-width: 1100px; margin: 60px auto 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 32px; align-items: center;
+  }
+
+  .grade-card {
+    background: linear-gradient(135deg, rgba(0,200,150,0.08), rgba(0,150,255,0.05));
+    border: 1px solid rgba(0,200,150,0.2);
+    border-radius: 24px; padding: 40px;
+    text-align: center;
+  }
+
+  .grade-letter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 100px; font-weight: 700;
+    line-height: 1; color: var(--green);
+    text-shadow: 0 0 60px rgba(0,200,150,0.4);
+  }
+
+  .grade-label { font-size: 20px; font-weight: 700; color: var(--green); margin: 4px 0; }
+  .grade-score { font-size: 14px; color: var(--muted); }
+
+  .grade-bars { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+
+  .grade-bar-item { display: flex; flex-direction: column; gap: 6px; }
+  .grade-bar-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .grade-bar-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 6px; overflow: hidden; }
+  .grade-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+  .grade-benefits { display: flex; flex-direction: column; gap: 16px; }
+  .grade-benefit {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px;
+  }
+  .grade-benefit-icon { font-size: 24px; flex-shrink: 0; }
+  .grade-benefit h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .grade-benefit p { font-size: 13px; color: var(--muted); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; max-width: 1100px; margin: 60px auto 0;
+  }
+
+  .testimonial-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+  }
+
+  .stars { color: #ffc800; font-size: 14px; margin-bottom: 14px; }
+  .testimonial-text { font-size: 15px; color: var(--text); line-height: 1.7; margin-bottom: 18px; font-style: italic; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+
+  .author-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: rgba(0,200,150,0.1); border: 1px solid rgba(0,200,150,0.2);
+  }
+
+  .author-name { font-size: 14px; font-weight: 700; }
+  .author-role { font-size: 12px; color: var(--muted); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    text-align: center; padding: 120px 24px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,200,150,0.04) 50%, transparent 100%);
+    position: relative; z-index: 1;
+  }
+
+  .cta-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700; letter-spacing: -2px;
+    line-height: 1.1; margin-bottom: 20px;
+  }
+
+  .cta-section p { font-size: 18px; color: var(--muted); margin-bottom: 44px; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+    position: relative; z-index: 1;
+  }
+
+  .footer-logo { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--green); }
+  .footer-copy { font-size: 13px; color: var(--muted); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.02); }
+  }
+
+  .fade-up { animation: fadeUp 0.7s ease forwards; }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.35s; opacity: 0; }
+  .delay-4 { animation-delay: 0.5s; opacity: 0; }
+
+  .phone-pulse { animation: pulse 4s ease-in-out infinite; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .stats-strip { gap: 24px; padding: 20px; }
+    .report-showcase { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+
+  .center { text-align: center; }
+  .max-w { max-width: 1100px; margin: 0 auto; }
+
+  /* Green dot blink */
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">💪</div>
+    FitLife
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#report">Report Card</a>
+    <a href="#reviews">Reviews</a>
+  </div>
+  <a href="#cta" class="nav-cta">Get Started Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+
+  <div class="hero-badge fade-up">
+    <span class="live-dot"></span>
+    Your complete fitness companion
+  </div>
+
+  <h1 class="fade-up delay-1">
+    Track. Train.<br/><span>Get Fit.</span>
+  </h1>
+
+  <p class="hero-sub fade-up delay-2">
+    FitLife brings together step tracking, calorie counting, workout plans, BMI, and a personalized report card — all in one place. No fluff. Just results.
+  </p>
+
+  <div class="hero-btns fade-up delay-3">
+    <a href="#cta" class="btn-primary">Start for Free →</a>
+    <a href="#features" class="btn-secondary">See Features</a>
+  </div>
+
+  <!-- Phone Mockup -->
+  <div class="phone-wrap phone-pulse fade-up delay-4">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <!-- Mock Header -->
+        <div class="mock-header">
+          <div class="mock-logo">💪 FitLife</div>
+          <div class="mock-score">87 🌟</div>
+        </div>
+
+        <!-- Steps Card -->
+        <div class="mock-card">
+          <div class="mock-label">STEPS TODAY</div>
+          <div class="mock-big">8,240</div>
+          <div class="mock-small">Goal: 10,000 steps</div>
+          <div class="mock-bar-track">
+            <div class="mock-bar-fill" style="width:82%"></div>
+          </div>
+        </div>
+
+        <!-- Row -->
+        <div class="mock-row">
+          <div class="mock-mini">
+            <div class="mock-mini-label">WATER</div>
+            <div class="mock-mini-val" style="color:#0096ff">6 / 8</div>
+            <div class="mock-small">glasses</div>
+          </div>
+          <div class="mock-mini">
+            <div class="mock-mini-label">CALORIES</div>
+            <div class="mock-mini-val" style="color:#ff6432">1,640</div>
+            <div class="mock-small">/ 2000 kcal</div>
+          </div>
+        </div>
+
+        <!-- BMI -->
+        <div class="mock-card">
+          <div class="mock-label">BMI</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="mock-big" style="color:#00c896">22.4</div>
+            <div style="font-size:10px;background:rgba(0,200,150,0.15);border:1px solid rgba(0,200,150,0.3);color:#00c896;padding:3px 8px;border-radius:6px;font-weight:700">Normal ✓</div>
+          </div>
+        </div>
+
+        <!-- Score bar -->
+        <div class="mock-card" style="border-color:rgba(255,200,0,0.2)">
+          <div class="mock-label">TODAY'S GRADE</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:28px;font-weight:900;color:#00c896;font-family:'Space Grotesk',sans-serif">A</div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#00c896">Great Performance</div>
+              <div style="font-size:9px;color:#5a7a92">Score: 87/100</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">12+</div>
+    <div class="stat-label">Features Built In</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Free to Use</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Age-Based Guides</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">S–D</div>
+    <div class="stat-label">Grade System</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Equipment Needed</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="max-w center">
+    <div class="section-label">Everything You Need</div>
+    <h2 class="section-title">Built for real<br/>fitness goals</h2>
+    <p class="section-sub" style="margin:0 auto">No premium tier. No locked features. Everything works from day one.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🚶</div>
+      <div class="feature-title">Step Tracker</div>
+      <div class="feature-desc">Log your daily steps with a visual progress ring. Set custom goals and see your % completion in real time.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <div class="feature-title">Calorie Counter</div>
+      <div class="feature-desc">Add food from a built-in library. Tracks calories, protein, carbs, and fat. Shows remaining budget vs goal instantly.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏋️</div>
+      <div class="feature-title">Workout Plans</div>
+      <div class="feature-desc">Home & Gym plans. Beginner and Intermediate levels. Tap each exercise to mark it done. Get a completion celebration.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📏</div>
+      <div class="feature-title">BMI Calculator</div>
+      <div class="feature-desc">Enter height and weight. Get your BMI instantly with color-coded category and actionable advice — not just a number.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <div class="feature-title">Progress Charts</div>
+      <div class="feature-desc">7-day visual charts for steps, calories, and daily score. Set your own targets for all key metrics.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-title">Report Card</div>
+      <div class="feature-desc">Get a letter grade (S to D) based on your real daily activity. Honest feedback. Weekly breakdown. No fake motivation.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💧</div>
+      <div class="feature-title">Water Tracker</div>
+      <div class="feature-desc">8-glass visual tracker with a full reminder schedule timed throughout the day. Tap glasses to log intake.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👤</div>
+      <div class="feature-title">Age-Based Guides</div>
+      <div class="feature-desc">Fitness tips tailored to five age groups — Teen, Young Adult, Adult, Middle Age, Senior. Real science per phase.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🍱</div>
+      <div class="feature-title">Food Guide</div>
+      <div class="feature-desc">What to eat, when to eat, and what to avoid — for every meal from breakfast to dinner. Eat/avoid breakdown per slot.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background: rgba(255,255,255,0.01);">
+  <div class="max-w center">
+    <div class="section-label">Simple Process</div>
+    <h2 class="section-title">Start in 3 steps</h2>
+    <p class="section-sub" style="margin:0 auto">No signup needed. Open the app and go.</p>
+  </div>
+
+  <div class="steps-container">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Open FitLife</h3>
+        <p>No account. No form. Just open the app and your dashboard is ready. Your daily score starts tracking immediately from the first action you take.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Set Your Targets</h3>
+        <p>Go to Progress → set your daily step goal, water goal, calorie target, and weight goal. The app calibrates everything around your numbers, not generic defaults.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Log. Earn. Improve.</h3>
+        <p>Log steps, water, meals, and workouts throughout the day. Your Report Card grades you S to D based on real output. Improve your grade tomorrow. That's it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT CARD -->
+<section id="report">
+  <div class="max-w">
+    <div class="center">
+      <div class="section-label">The Report Card</div>
+      <h2 class="section-title">A grade you actually<br/>have to earn</h2>
+      <p class="section-sub" style="margin:0 auto 0">Your score is calculated from real activity — steps, hydration, habits, and workouts. You can't fake it.</p>
+    </div>
+
+    <div class="report-showcase">
+      <div class="grade-card">
+        <div class="grade-letter">A</div>
+        <div class="grade-label">Great Performance</div>
+        <div class="grade-score">Score: 87 / 100 🌟</div>
+
+        <div class="grade-bars">
+          <div class="grade-bar-item">
+            <div class="grade-bar-top"><span>🚶 Steps</span><span style="color:var(--green)">26/30</span></div>
+            <div class="grade-bar-track"><div class="grade-bar-fill" style="width:87%;background:var(--green)"></div></div>
+          </div>
+          <div class="grade-bar-item">
+            <div class="grade-bar-top"><span>💧 Hydration</span><span style="color:#0096ff">22/25</span></div>
+            <div class="grade-bar-track"><div class="grade-bar-fill" style="width:88%;background:#0096ff"></div></div>
+          </div>
+          <div class="grade-bar-item">
+            <div class="grade-bar-top"><span>⚡ Habits</span><span style="color:#ffc800">20/25</span></div>
+            <div class="grade-bar-track"><div class="grade-bar-fill" style="width:80%;background:#ffc800"></div></div>
+          </div>
+          <div class="grade-bar-item">
+            <div class="grade-bar-top"><span>🏋️ Workout</span><span style="color:#ff6432">19/20</span></div>
+            <div class="grade-bar-track"><div class="grade-bar-fill" style="width:95%;background:#ff6432"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grade-benefits">
+        <div class="grade-benefit">
+          <div class="grade-benefit-icon">🏆</div>
+          <div>
+            <h4>S Grade — Elite (90+)</h4>
+            <p>You hit all targets consistently. You're operating above average. Maintain it.</p>
+          </div>
+        </div>
+        <div class="grade-benefit">
+          <div class="grade-benefit-icon">📊</div>
+          <div>
+            <h4>Weekly Breakdown</h4>
+            <p>See your grade for every day of the past week. Identify your weak days and target them.</p>
+          </div>
+        </div>
+        <div class="grade-benefit">
+          <div class="grade-benefit-icon">💬</div>
+          <div>
+            <h4>Honest Feedback</h4>
+            <p>No fake motivation. Your report card tells you exactly what's dragging your score down and what to fix.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" style="background: rgba(255,255,255,0.01);">
+  <div class="max-w center">
+    <div class="section-label">Real Users</div>
+    <h2 class="section-title">What people say</h2>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">"The report card is brutal and I love it. Got a D on my first day and it genuinely made me want to do better the next day. Haven't missed a workout since."</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">🧑</div>
+        <div>
+          <div class="author-name">Rahul M.</div>
+          <div class="author-role">College Student, Hyderabad</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">"Finally an app that tracks everything without needing a subscription. The calorie counter is simple, the workout plans are solid, and the BMI tool actually gives advice."</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩</div>
+        <div>
+          <div class="author-name">Priya S.</div>
+          <div class="author-role">Working Professional, Bangalore</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">"The age-based guide is actually thoughtful. I'm 47 and the tips for my age group are specific and accurate — not just generic 'exercise more' advice."</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨</div>
+        <div>
+          <div class="author-name">Arun K.</div>
+          <div class="author-role">Business Owner, Chennai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="hero-glow" style="opacity:0.6"></div>
+  <div class="section-label">Free. No Signup. Now.</div>
+  <h2>Start your<br/><span style="background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent">fitness journey</span><br/>today</h2>
+  <p>Everything is free. No account required. Just open and start.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <a href="#" class="btn-primary" style="font-size:18px;padding:18px 44px">Launch FitLife →</a>
+  </div>
+  <div style="margin-top:24px;font-size:13px;color:var(--muted)">Works on mobile · No downloads · 100% free</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">💪 FitLife</div>
+  <div class="footer-copy">© 2026 FitLife. Built for real fitness goals.</div>
+  <div class="footer-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#report">Report Card</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .step-item, .testimonial-card, .grade-benefit').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
